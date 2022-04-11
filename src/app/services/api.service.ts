@@ -21,4 +21,12 @@ export class ApiService {
   getTableData(id: string):Observable<any>{
     return this.http.get(this.API+'/table/data/all/'+id);
   }
+
+  createTableRow(typeId: string, data:any): Observable<any>{
+    return this.http.post(this.API+'/table/data/create/'+typeId, data);
+  }
+
+  removeTableRow(typeId: string, id: string): Observable<any>{
+    return this.http.delete(this.API+'/table/data/delete/'+typeId+'/'+id);
+  }
 }

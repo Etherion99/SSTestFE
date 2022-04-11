@@ -16,15 +16,45 @@
         <div class="card">
             <h1><strong>Datos</strong></h1>
             <br><br>
-            <kendo-grid
-                [kendoGridBinding]="gridData"
-                >
-                <kendo-grid-column
-                    *ngFor="let column of columns"
-                    field="{{ column.header }}"
-                    title="{{ column.header }}"
-                ></kendo-grid-column>
-            </kendo-grid>
+            <form novalidate #myForm="ngForm">
+                <kendo-grid
+                    [kendoGridBinding]="gridData"
+                    (add)="addHandler($event, myForm)"
+                    (save)="saveHandler($event)"
+                    (remove)="removeHandler($event)"
+                    >
+                    <ng-template kendoGridToolbarTemplate>
+                        <button kendoGridAddCommand type="button">Add new</button>
+                    </ng-template>
+                    <kendo-grid-column
+                        *ngFor="let column of columns"
+                        field="{{ column.header }}"
+                        title="{{ column.header }}"
+                        >
+                        <ng-template kendoGridEditTemplate let-dataItem="dataItem">
+                            <input [(ngModel)]="dataItem[column.header]" name="{{column.header}}" kendoGridFocusable type="text">
+                        </ng-template>
+                    </kendo-grid-column>
+                    <kendo-grid-command-column title="command">
+                        <ng-template kendoGridCellTemplate let-isNew="isNew">
+                            <button kendoGridEditCommand type="button" [primary]="true">
+                                Edit
+                            </button>
+                            <button kendoGridRemoveCommand type="button">Remove</button>
+                            <button
+                                kendoGridSaveCommand
+                                type="button"
+                                [disabled]="myForm.invalid || myForm.pristine || false"
+                                >
+                                {{ isNew ? "Add" : "Update" }}
+                            </button>
+                            <button kendoGridCancelCommand type="button">
+                                {{ isNew ? "Discard changes" : "Cancel" }}
+                            </button>
+                        </ng-template>
+                    </kendo-grid-command-column>
+                </kendo-grid>
+            </form>            
         </div>
     </div>
 </div>
