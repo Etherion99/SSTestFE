@@ -23,6 +23,7 @@
                     (save)="saveHandler($event)"
                     (remove)="removeHandler($event)"
                     (edit)="editHandler($event)"
+                    (cancel)="cancelHandler($event)"
                     >
                     <ng-template kendoGridToolbarTemplate>
                         <button kendoGridAddCommand type="button">Add new</button>
@@ -33,7 +34,7 @@
                         title="{{ column.header }}"
                         >
                         <ng-template kendoGridEditTemplate let-dataItem="dataItem">
-                            <input [(ngModel)]="dataItem[column.header]" name="{{column.header}}" kendoGridFocusable type="text">
+                            <input [(ngModel)]="dataItem[column.header]" name="{{column.header}}" kendoGridFocusable type="{{getType(column.dataType)}}">
                         </ng-template>
                     </kendo-grid-column>
                     <kendo-grid-command-column title="command">
