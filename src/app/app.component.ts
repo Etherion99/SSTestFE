@@ -13,7 +13,6 @@ export class AppComponent {
   columns:any[] = [];
   gridData:any[] = [];
   private editedRowIndex: number = -1;
-  private editedItem: any = null;
 
   constructor(private api: ApiService){
     this.getTables();
@@ -71,33 +70,40 @@ export class AppComponent {
   }
 
   public saveHandler({ sender, rowIndex, dataItem, isNew }:any) {
-    console.log(dataItem)
-    this.api.createTableRow(this.selectedTable._id, { content: dataItem }).subscribe(data => {
-      sender.closeRow(rowIndex);
+    if(isNew){
+      this.api.createTableRow(this.selectedTable._id, { content: dataItem }).subscribe(data => {
+        sender.closeRow(rowIndex);
+  
+        this.editedRowIndex = -1;
 
-      this.editedRowIndex = -1;
-      this.editedItem = null;
+        this.selectTable();
+      });
+    }else{
+      const id = dataItem.id;
+      delete dataItem['id'];
 
-      this.selectTable();
-    });
+      this.api.updateTableRow(id, { content: dataItem }).subscribe(data => {
+        sender.closeRow(rowIndex);
+        
+        this.selectTable();
+      });
+    }
+  }
+
+  public editHandler({ sender, rowIndex, dataItem }: any) {
+    this.closeEditor(sender);
+
+    sender.editRow(rowIndex);
   }
 
   public removeHandler({ dataItem }:any) {
+    console.log('id', dataItem.id);
     this.api.removeTableRow(this.selectedTable._id, dataItem.id).subscribe(data => {
       this.selectTable();
     });
   }
 
-  /*public editHandler({ sender, rowIndex, dataItem }) {
-    this.closeEditor(sender);
-
-    this.editedRowIndex = rowIndex;
-    this.editedProduct = Object.assign({}, dataItem);
-
-    sender.editRow(rowIndex);
-  }
-
-  public cancelHandler({ sender, rowIndex }) {
+  /*public cancelHandler({ sender, rowIndex }) {
     this.closeEditor(sender, rowIndex);
   }
 
@@ -111,6 +117,5 @@ export class AppComponent {
     grid.closeRow(rowIndex);
 
     this.editedRowIndex = -1;
-    this.editedItem = null;
   }
 }
